@@ -13,7 +13,7 @@ import ast
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
@@ -30,8 +30,8 @@ __all__ = ["main"]
 class EnvironGetCall:
     description: Optional["Description"] = None
     args: tuple[str, ...] = ()
-    default: str | None = None
-    type: str | None = None
+    default: Union[str, None] = None
+    type: Union[str, None] = None
 
     def get_type(self) -> str:
         if self.description and self.description.type:
@@ -47,7 +47,7 @@ class EnvironGetCall:
         else:
             return "str"
 
-    def get_default(self) -> str | None:
+    def get_default(self) -> Union[str, None]:
         if self.description and self.description.default:
             return self.description.default
         elif self.default:
@@ -59,7 +59,7 @@ class EnvironGetCall:
         return self.get_default() is None
 
     @property
-    def section(self) -> str | None:
+    def section(self) -> Union[str, None]:
         if self.is_required():
             # Override the section for required variables
             return "REQUIRED"
@@ -68,7 +68,7 @@ class EnvironGetCall:
         return None
 
 
-def is_environ_get(node: ast.AST | None) -> TypeGuard[ast.Call]:
+def is_environ_get(node: Union[ast.AST, None]) -> TypeGuard[ast.Call]:
     return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "environ_get"
 
 
@@ -81,9 +81,9 @@ def get_args_kwargs(node: ast.Call) -> tuple[tuple[str, ...], dict[str, str]]:
 @dataclass
 class Description:
     description: str
-    default: str | None = None
-    type: str | None = None
-    section: str | None = None
+    default: Union[str, None] = None
+    type: Union[str, None] = None
+    section: Union[str, None] = None
 
     @classmethod
     def from_desc(cls, desc: str) -> "Description":
@@ -106,7 +106,7 @@ class Description:
         )
 
 
-def find_environ_get_calls(root: ast.AST, filename: str | None = None) -> dict[str, EnvironGetCall]:
+def find_environ_get_calls(root: ast.AST, filename: Union[str, None] = None) -> dict[str, EnvironGetCall]:
     environ_get_calls: dict[str, EnvironGetCall] = {}
     prev_node = None
 
@@ -162,8 +162,8 @@ def find_environ_get_calls(root: ast.AST, filename: str | None = None) -> dict[s
 
 
 def render_doc(
-    calls_by_section: dict[str | None, dict[str, EnvironGetCall]],
-    filename: str | None = None,
+    calls_by_section: dict[Union[str, None], dict[str, EnvironGetCall]],
+    filename: Union[str, None] = None,
     refs: bool = True,
 ) -> str:
     lines = []
@@ -222,9 +222,9 @@ def render_doc(
     return "\n".join(lines)
 
 
-def sort_by_section(calls: dict[str, EnvironGetCall]) -> dict[str | None, dict[str, EnvironGetCall]]:
+def sort_by_section(calls: dict[str, EnvironGetCall]) -> dict[Union[str, None], dict[str, EnvironGetCall]]:
     # Sort by section
-    calls_by_section: dict[str | None, dict[str, EnvironGetCall]] = {}
+    calls_by_section: dict[Union[str, None], dict[str, EnvironGetCall]] = {}
     for name, call in calls.items():
         if call.section not in calls_by_section:
             calls_by_section[call.section] = {}
@@ -254,7 +254,7 @@ def sort_by_section(calls: dict[str, EnvironGetCall]) -> dict[str | None, dict[s
 
 def main(
     content: str,
-    filename: str | None = None,
+    filename: Union[str, None] = None,
     refs: bool = True,
 ) -> str:
     root = ast.parse(content)
