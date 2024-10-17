@@ -11,9 +11,9 @@ import os
 from collections.abc import Callable
 from typing import TypeVar, Union, overload
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
-__all__ = ["environ_get", "set_environ_get_strict"]
+__all__ = ["environ_get", "set_environ_get_strict", "bool_parser"]
 
 _D = TypeVar("_D")
 _T = TypeVar("_T")
@@ -88,6 +88,24 @@ def environ_get(
         raise ValueError(message)
 
     return default
+
+
+TRUE_VALUES = {"T", "Y", "1", "True", "true", "TRUE", "Yes", "yes", "YES", True, 1}
+FALSE_VALUES = {"F", "N", "0", "False", "false", "FALSE", "No", "no", "NO", "", False, 0}
+
+
+def bool_parser(
+    value: object,
+    true_values: set[object] = TRUE_VALUES,
+    false_values: set[object] = FALSE_VALUES,
+) -> bool:
+    """Universal bool parser"""
+    if value in true_values:
+        return True
+    elif value in false_values:
+        return False
+    else:
+        raise ValueError(f"Cannot parse '{value!r}' of type {type(value)} to a bool.")
 
 
 __license__ = """

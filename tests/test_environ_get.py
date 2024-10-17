@@ -3,7 +3,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from environ_get import environ_get
+from environ_get import environ_get, bool_parser
 
 
 @pytest.fixture(autouse=True)
@@ -41,3 +41,19 @@ def test_environ_get() -> None:
     assert environ_get("BOOL_KEY") == "True"
     assert environ_get("STR_KEY") == "hello"
     assert environ_get("NONEXISTENT_KEY", default=None) is None
+
+
+def test_bool_parser() -> None:
+    assert environ_get("BOOL_KEY", type=bool_parser) is True
+
+    os.environ["BOOL_KEY"] = "false"
+    assert environ_get("BOOL_KEY", type=bool_parser) is False
+
+    os.environ["BOOL_KEY"] = "0"
+    assert environ_get("BOOL_KEY", type=bool_parser) is False
+
+    os.environ["BOOL_KEY"] = "1"
+    assert environ_get("BOOL_KEY", type=bool_parser) is True
+
+    os.environ["BOOL_KEY"] = "true"
+    assert environ_get("BOOL_KEY", type=bool_parser) is True
