@@ -13,7 +13,12 @@ import ast
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, TypeGuard
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
+else:
+    TypeGuard = type
 
 # NOTE: This mirrors the version in environ_get.py. Remember to update both. There is a test which checks this.
 __version__ = "0.3.0"
