@@ -9,7 +9,7 @@ Written by Marcin Konowalczyk.
 
 import os
 from collections.abc import Callable
-from typing import TypeVar, overload
+from typing import TypeVar, Union, overload
 
 __version__ = "0.1.0"
 
@@ -34,11 +34,11 @@ def environ_get(*keys: str, default: None = ..., type: None = ...) -> str: ...
 
 
 @overload
-def environ_get(*keys: str, default: _D, type: None = ...) -> _D | str: ...
+def environ_get(*keys: str, default: _D, type: None = ...) -> Union[_D, str]: ...
 
 
 @overload
-def environ_get(*keys: str, default: _D, type: Callable[[str], _T]) -> _D | _T: ...
+def environ_get(*keys: str, default: _D, type: Callable[[str], _T]) -> Union[_D, _T]: ...
 
 
 @overload
@@ -48,16 +48,16 @@ def environ_get(*keys: str, type: Callable[[str], _T]) -> _T: ...
 def environ_get(
     *keys: str,
     default: _D = _missing,  # type: ignore
-    type: Callable[[str], _T] | None = None,
-    strict: bool | None = None,
-) -> str | _D | _T:
+    type: Union[Callable[[str], _T], None] = None,
+    strict: Union[bool, None] = None,
+) -> Union[str, _D, _T]:
     """Get the value of the first key found in the environment. If no key is found, return the default value,
     or raise an exception if no default is provided. Optionally, convert the value to the desired type.
     If the conversion fails, raise an exception or return the default value (if provided).
     """
     strict = __ENVIRON_GET_STRICT if strict is None else strict
     environ = os.environ
-    value: str | None = None
+    value: Union[str, None] = None
     for key in keys:
         # NOTE: environ.get() returns str | None
         value = environ.get(key)
