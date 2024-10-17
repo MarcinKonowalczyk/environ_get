@@ -1,0 +1,7 @@
+__pycache__
+.mypy_cache
+.ruff_cache
+.tox
+dist
+.python-version
+.pytest_cache
