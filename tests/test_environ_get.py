@@ -3,7 +3,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from environ_get import environ_get, bool_parser
+from environ_get import bool_parser, environ_get
 
 
 @pytest.fixture(autouse=True)
