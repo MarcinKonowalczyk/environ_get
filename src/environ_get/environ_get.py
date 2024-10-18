@@ -29,35 +29,26 @@ def set_environ_get_strict(strict: bool) -> None:
     __ENVIRON_GET_STRICT = strict
 
 
+# Overloads for matching `default` and `type` arguments
+# XXX: These are very long since we need to specify the `other` and `strict` arguments too
+# fmt: off
 @overload
-def environ_get(
-    key: str, /, *, other: Union[str, list[str], None] = ..., default: None = ..., type: None = ...
-) -> str: ...
-
-
+def environ_get(key: str, *, default: None = ..., type: None = ..., other: Union[str, list[str], None] = ..., strict: Union[bool, None] = ...) -> str: ... # noqa: E501
 @overload
-def environ_get(
-    key: str, /, *, other: Union[str, list[str], None] = ..., default: _D, type: None = ...
-) -> Union[_D, str]: ...
-
-
+def environ_get(key: str, *, default: _D, type: None = ..., other: Union[str, list[str], None] = ..., strict: Union[bool, None] = ...) -> Union[_D, str]: ... # noqa: E501
 @overload
-def environ_get(
-    key: str, /, *, other: Union[str, list[str], None] = ..., default: _D, type: Callable[[str], _T]
-) -> Union[_D, _T]: ...
-
-
+def environ_get(key: str, *, default: _D, type: Callable[[str], _T], other: Union[str, list[str], None] = ..., strict: Union[bool, None] = ...) -> Union[_D, _T]: ... # noqa: E501
 @overload
-def environ_get(key: str, /, *, other: Union[str, list[str], None] = ..., type: Callable[[str], _T]) -> _T: ...
+def environ_get(key: str, *, type: Callable[[str], _T], other: Union[str, list[str], None] = ..., strict: Union[bool, None] = ...) -> _T: ... # noqa: E501
+# fmt: on
 
 
 def environ_get(
     key: str,
-    /,
     *,
-    other: Union[str, list[str], None] = None,
     default: _D = _missing,  # type: ignore
     type: Union[Callable[[str], _T], None] = None,
+    other: Union[str, list[str], None] = None,
     strict: Union[bool, None] = None,
 ) -> Union[str, _D, _T]:
     """Get the value of the first key found in the environment (additional keys can be provided in `other`).
