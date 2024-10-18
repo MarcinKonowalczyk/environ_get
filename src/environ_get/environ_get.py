@@ -30,39 +30,53 @@ def set_environ_get_strict(strict: bool) -> None:
 
 
 @overload
-def environ_get(*keys: str, default: None = ..., type: None = ...) -> str: ...
+def environ_get(
+    key: str, /, *, other: Union[str, list[str], None] = ..., default: None = ..., type: None = ...
+) -> str: ...
 
 
 @overload
-def environ_get(*keys: str, default: _D, type: None = ...) -> Union[_D, str]: ...
+def environ_get(
+    key: str, /, *, other: Union[str, list[str], None] = ..., default: _D, type: None = ...
+) -> Union[_D, str]: ...
 
 
 @overload
-def environ_get(*keys: str, default: _D, type: Callable[[str], _T]) -> Union[_D, _T]: ...
+def environ_get(
+    key: str, /, *, other: Union[str, list[str], None] = ..., default: _D, type: Callable[[str], _T]
+) -> Union[_D, _T]: ...
 
 
 @overload
-def environ_get(*keys: str, type: Callable[[str], _T]) -> _T: ...
+def environ_get(key: str, /, *, other: Union[str, list[str], None] = ..., type: Callable[[str], _T]) -> _T: ...
 
 
 def environ_get(
-    *keys: str,
+    key: str,
+    /,
+    *,
+    other: Union[str, list[str], None] = None,
     default: _D = _missing,  # type: ignore
     type: Union[Callable[[str], _T], None] = None,
     strict: Union[bool, None] = None,
 ) -> Union[str, _D, _T]:
-    """Get the value of the first key found in the environment. If no key is found, return the default value,
-    or raise an exception if no default is provided. Optionally, convert the value to the desired type.
-    If the conversion fails, raise an exception or return the default value (if provided).
+    """Get the value of the first key found in the environment (additional keys can be provided in `other`).
+    If no key is found, return the default value, or raise an exception if no default is provided.
+    Optionally, convert the value to the desired type. If the conversion fails, raise an exception or
+    return the default value (if provided).
     """
     strict = __ENVIRON_GET_STRICT if strict is None else strict
     environ = os.environ
-    value: Union[str, None] = None
-    for key in keys:
-        # NOTE: environ.get() returns str | None
-        value = environ.get(key)
-        if value is not None:
-            break
+
+    # Get the value from the environment
+    value = environ.get(key)
+    if value is None and other is not None:
+        if isinstance(other, str):
+            other = [other]
+        for other_key in other:
+            value = environ.get(other_key)
+            if value is not None:
+                break
 
     # Found a key! Return it possibly converted to the desired type
     if value is not None:
@@ -81,10 +95,11 @@ def environ_get(
 
     # We got here because none of the keys were found
     if default is _missing:
-        if len(keys) == 1:
-            message = f"The key {keys[0]} was not found in the environment."
+        if other is None:
+            message = f"The key {key} was not found in the environment."
         else:
-            message = f"None of the keys {list(keys)} were found in the environment."
+            keys = [key, *other] if isinstance(other, list) else [key, other]
+            message = f"None of the keys {tuple(keys)} were found in the environment."
         raise ValueError(message)
 
     return default
