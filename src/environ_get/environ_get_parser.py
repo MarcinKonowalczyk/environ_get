@@ -21,7 +21,7 @@ else:
     TypeGuard = type
 
 # NOTE: This mirrors the version in environ_get.py. Remember to update both. There is a test which checks this.
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __all__ = ["generate_environ_doc"]
 

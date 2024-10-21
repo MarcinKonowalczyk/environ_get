@@ -11,7 +11,7 @@ import os
 from collections.abc import Callable
 from typing import TypeVar, Union, overload
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __all__ = ["environ_get", "set_environ_get_strict", "bool_parser"]
 
@@ -33,7 +33,7 @@ def set_environ_get_strict(strict: bool) -> None:
 # XXX: These are very long since we need to specify the `other` and `strict` arguments too
 # fmt: off
 @overload
-def environ_get(key: str, *, default: None = ..., type: None = ..., other: Union[str, list[str], None] = ..., strict: Union[bool, None] = ...) -> str: ... # noqa: E501
+def environ_get(key: str, *, type: None = ..., other: Union[str, list[str], None] = ..., strict: Union[bool, None] = ...) -> str: ... # noqa: E501
 @overload
 def environ_get(key: str, *, default: _D, type: None = ..., other: Union[str, list[str], None] = ..., strict: Union[bool, None] = ...) -> Union[_D, str]: ... # noqa: E501
 @overload
