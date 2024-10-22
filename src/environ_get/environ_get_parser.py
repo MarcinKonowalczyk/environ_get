@@ -11,8 +11,7 @@ Written by Marcin Konowalczyk.
 
 import ast
 import textwrap
-from dataclasses import dataclass
-from pathlib import Path
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
@@ -21,7 +20,7 @@ else:
     TypeGuard = type
 
 # NOTE: This mirrors the version in environ_get.py. Remember to update both. There is a test which checks this.
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 __all__ = ["generate_environ_doc"]
 
@@ -29,7 +28,7 @@ __all__ = ["generate_environ_doc"]
 _warning = lambda msg: print(f"WARNING: {msg}")
 
 
-@dataclass
+@dataclass(frozen=True)
 class EnvironGetCall:
     key: str
     description: Optional["Description"] = None
@@ -82,7 +81,7 @@ def get_args_kwargs(node: ast.Call) -> tuple[tuple[str, ...], dict[str, str]]:
     return args, kwargs
 
 
-@dataclass
+@dataclass(frozen=True)
 class Description:
     description: str
     default: Union[str, None] = None
@@ -186,7 +185,7 @@ def find_environ_get_calls(content: str) -> dict[str, EnvironGetCall]:
                 args, _kwargs = get_args_kwargs(value)
                 key = args[0]
                 desc = textwrap.dedent(node.value.value).strip()
-                environ_get_calls[key].description = Description.from_desc(desc)
+                environ_get_calls[key] = replace(environ_get_calls[key], description=Description.from_desc(desc))
                 seen_linenumbers.add(node.lineno)
 
         prev_node = node
@@ -366,6 +365,8 @@ if __name__ == "__main__":
         You should specify the type in the description using the ``.. type::``
         directive.
         """
+
+    from pathlib import Path
 
     this_file = Path(__file__).resolve()
 

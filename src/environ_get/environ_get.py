@@ -11,7 +11,7 @@ import os
 from collections.abc import Callable
 from typing import TypeVar, Union, overload
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 __all__ = ["environ_get", "set_environ_get_strict", "bool_parser"]
 
