@@ -25,7 +25,7 @@ __version__ = "1.0.2"
 __all__ = ["generate_environ_doc"]
 
 
-_warning = lambda msg: print(f"WARNING: {msg}")
+_warning = lambda msg: print(f"WARNING: {msg}")  # noqa: E731
 
 
 @dataclass(frozen=True)
@@ -157,7 +157,7 @@ def find_environ_get_calls(content: str) -> dict[str, EnvironGetCall]:
     seen_linenumbers: set[int] = set()
     prev_node = None
 
-    _process_node2 = lambda node: _process_node(
+    _process_node2 = lambda node: _process_node(  # noqa: E731
         node,
         environ_get_calls=environ_get_calls,
         seen_linenumbers=seen_linenumbers,
@@ -258,7 +258,7 @@ def sort_by_section(calls: dict[str, EnvironGetCall]) -> dict[Union[str, None], 
         calls_by_section[call.section][name] = call
 
     # Within each section, sort by name
-    for key in calls_by_section:
+    for key in calls_by_section:  # noqa: PLC0206
         section = calls_by_section[key]
         calls_by_section[key] = dict(sorted(section.items()))
 

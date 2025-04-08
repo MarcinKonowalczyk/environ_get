@@ -28,8 +28,10 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install tox
-        run: pip install tox
+      - name: Install uv and tox
+        run: |
+          pip install uv
+          uv tool install tox --with tox-uv
 
       - name: Run tox
-        run: make tox
+        run: uv tool run tox

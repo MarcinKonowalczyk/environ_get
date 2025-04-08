@@ -13,7 +13,7 @@ from typing import TypeVar, Union, overload
 
 __version__ = "1.0.2"
 
-__all__ = ["environ_get", "set_environ_get_strict", "bool_parser"]
+__all__ = ["bool_parser", "environ_get", "set_environ_get_strict"]
 
 _D = TypeVar("_D")
 _T = TypeVar("_T")
@@ -96,8 +96,8 @@ def environ_get(
     return default
 
 
-TRUE_VALUES = {"T", "Y", "1", "True", "true", "TRUE", "Yes", "yes", "YES", True, 1}
-FALSE_VALUES = {"F", "N", "0", "False", "false", "FALSE", "No", "no", "NO", "", False, 0}
+TRUE_VALUES = {"T", "Y", "1", "True", "true", "TRUE", "Yes", "yes", "YES", True}
+FALSE_VALUES = {"F", "N", "0", "False", "false", "FALSE", "No", "no", "NO", "", False}
 
 
 def bool_parser(
